@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow | Professional Task Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: #334155;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            height: 95vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            padding: 24px 32px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+        }
+
+        .header-left p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+            font-weight: 300;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .user-role {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .app-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: #f1f5f9;
+            padding: 24px;
+            border-right: 1px solid #e2e8f0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: 10px;
+            color: #475569;
+            text-decoration: none;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+
+        .nav-item:hover {
+            background: #e2e8f0;
+        }
+
+        .nav-item.active {
+            background: #3b82f6;
+            color: white;
+            font-weight: 500;
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .task-stats {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+        }
+
+        .stat-card h3 {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        .content-header h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .date-display {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .input-card {
+            background: #f8fafc;
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 32px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .input-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 18px;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .input-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 1rem;
+            color: #334155;
+            transition: all 0.2s;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .add-task-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .add-task-btn:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .tasks-section {
+            margin-top: 20px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-header h3 {
+            font-size: 1.3rem;
+            color: #1e293b;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: #f1f5f9;
+            border: none;
+            border-radius: 8px;
+            color: #64748b;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .filter-btn.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .tasks-list {
+            list-style: none;
+        }
+
+        .task-item {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 12px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.2s;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .task-item:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .task-item.completed {
+            opacity: 0.7;
+            background: #f8fafc;
+        }
+
+        .task-checkbox {
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            border: 2px solid #cbd5e1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .task-checkbox.checked {
+            background: #10b981;
+            border-color: #10b981;
+            color: white;
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-title {
+            font-weight: 500;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .task-item.completed .task-title {
+            text-decoration: line-through;
+            color: #94a3b8;
+        }
+
+        .task-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .task-meta i {
+            margin-right: 5px;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f5f9;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn.delete:hover {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .action-btn.edit:hover {
+            background: #dbeafe;
+            color: #3b82f6;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            color: #64748b;
+        }
+
+        .footer {
+            padding: 20px 32px;
+            background: #f1f5f9;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Notification Modal Styles */
+        .notification-modal {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+            width: 350px;
+            overflow: hidden;
+            animation: slideInRight 0.5s ease;
+            border-left: 5px solid #ef4444;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        .notification-header {
+            background: #ef4444;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notification-header h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .notification-body {
+            padding: 20px;
+        }
+
+        .notification-task {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1e293b;
+        }
+
+        .notification-time {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .notification-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .notification-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .notification-btn.complete {
+            background: #10b981;
+            color: white;
+        }
+
+        .notification-btn.complete:hover {
+            background: #0da271;
+        }
+
+        .notification-btn.snooze {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .notification-btn.snooze:hover {
+            background: #e2e8f0;
+        }
+
+        @media (max-width: 900px) {
+            .app-content {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                padding: 20px;
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+            }
+            
+            .input-row {
+                flex-direction: column;
+            }
+            
+            .input-group {
+                min-width: 100%;
+            }
+            
+            .notification-modal {
+                width: calc(100% - 40px);
+                right: 20px;
+                left: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <h1>TaskFlow</h1>
+                <p>Professional Task Manager</p>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <div class="user-name">Jayniel Cabritit</div>
+                    <div class="user-role">Project Manager</div>
+                </div>
+                <div class="user-avatar">
+                    JS
+                </div>
+            </div>
+        </div>
+        
+        <div class="app-content">
+            <div class="sidebar">
+                <nav>
+                    <a href="#" class="nav-item active">
+                        <i class="fas fa-tasks"></i>
+                        <span>My Tasks</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Calendar</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Analytics</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </nav>
+                
+                <div class="task-stats">
+                    <div class="stat-card">
+                        <h3>Total Tasks</h3>
+                        <div class="number" id="totalTasks">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Completed</h3>
+                        <div class="number" id="completedTasks">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Pending</h3>
+                        <div class="number" id="pendingTasks">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Due Soon</h3>
+                        <div class="number" id="dueSoonTasks">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="main-content">
+                <div class="content-header">
+                    <div>
+                        <h2>My Tasks</h2>
+                        <div class="date-display" id="currentDate">Loading...</div>
+                    </div>
+                    <button class="action-btn" id="notificationBtn" title="Notification Settings">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                </div>
+                
+                <div class="input-card">
+                    <h3><i class="fas fa-plus-circle"></i> Add New Task</h3>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label for="taskInput">Task Description</label>
+                            <input type="text" class="input-field" id="taskInput" placeholder="Enter task description">
+                        </div>
+                        <div class="input-group">
+                            <label for="taskDate">Due Date</label>
+                            <input type="date" class="input-field" id="taskDate">
+                        </div>
+                        <div class="input-group">
+                            <label for="taskTime">Due Time</label>
+                            <input type="time" class="input-field" id="taskTime">
+                        </div>
+                    </div>
+                    <button class="add-task-btn" onclick="addTask()">
+                        <i class="fas fa-plus"></i>
+                        Add Task
+                    </button>
+                </div>
+                
+                <div class="tasks-section">
+                    <div class="section-header">
+                        <h3>Task List</h3>
+                        <div class="filter-buttons">
+                            <button class="filter-btn active" onclick="filterTasks('all')">All</button>
+                            <button class="filter-btn" onclick="filterTasks('pending')">Pending</button>
+                            <button class="filter-btn" onclick="filterTasks('completed')">Completed</button>
+                            <button class="filter-btn" onclick="filterTasks('dueToday')">Due Today</button>
+                        </div>
+                    </div>
+                    
+                    <ul class="tasks-list" id="taskList">
+                        <!-- Tasks will be added here dynamically -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div>TaskFlow v2.0 • Professional Task Manager</div>
+            <div>
+                <span id="currentTime">Loading...</span>
+                <span id="notificationStatus" style="margin-left: 15px; font-size: 0.8rem;"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Modal -->
+    <div id="notificationModal" class="notification-modal" style="display: none;">
+        <div class="notification-header">
+            <h4><i class="fas fa-bell"></i> Task Due Now!</h4>
+            <button class="notification-close" onclick="closeNotification()">&times;</button>
+        </div>
+        <div class="notification-body">
+            <div class="notification-task" id="notificationTaskTitle"></div>
+            <div class="notification-time" id="notificationTaskTime"></div>
+            <p style="color: #64748b; font-size: 0.9rem;">This task is due now. What would you like to do?</p>
+            <div class="notification-actions">
+                <button class="notification-btn complete" onclick="completeNotificationTask()">Mark Complete</button>
+                <button class="notification-btn snooze" onclick="snoozeNotification()">Snooze 5 min</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let tasks = [];
+        let currentFilter = 'all';
+        let currentNotificationTask = null;
+        let notificationAudio = null;
+        
+        // Initialize notification permission
+        function initializeNotifications() {
+            if ("Notification" in window) {
+                if (Notification.permission === "granted") {
+                    updateNotificationStatus("Notifications enabled");
+                } else if (Notification.permission !== "denied") {
+                    Notification.requestPermission().then(permission => {
+                        if (permission === "granted") {
+                            updateNotificationStatus("Notifications enabled");
+                        } else {
+                            updateNotificationStatus("Notifications blocked");
+                        }
+                    });
+                } else {
+                    updateNotificationStatus("Notifications blocked");
+                }
+            } else {
+                updateNotificationStatus("Notifications not supported");
+            }
+            
+            // Create audio for notification sound
+            notificationAudio = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=");
+        }
+        
+        function updateNotificationStatus(status) {
+            const statusElement = document.getElementById('notificationStatus');
+            if (statusElement) {
+                statusElement.textContent = status;
+                if (status.includes("enabled")) {
+                    statusElement.style.color = "#10b981";
+                } else if (status.includes("blocked") || status.includes("not supported")) {
+                    statusElement.style.color = "#ef4444";
+                }
+            }
+        }
+        
+        // Set current date and time
+        function updateDateTime() {
+            const now = new Date();
+            const dateString = now.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            const timeString = now.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            
+            document.getElementById('currentDate').textContent = dateString;
+            document.getElementById('currentTime').textContent = timeString;
+        }
+        
+        // Initialize date and update every second
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+        
+        function addTask() {
+            const text = document.getElementById('taskInput').value.trim();
+            const date = document.getElementById('taskDate').value;
+            const time = document.getElementById('taskTime').value;
+
+            if (text === '') {
+                showToast("Please enter a task description!", "error");
+                return;
+            }
+            
+            if (date === '') {
+                showToast("Please select a due date!", "error");
+                return;
+            }
+            
+            if (time === '') {
+                showToast("Please select a due time!", "error");
+                return;
+            }
+
+            const task = {
+                id: Date.now(),
+                text: text,
+                date: date,
+                time: time,
+                completed: false,
+                notified: false,
+                snoozed: false,
+                snoozeUntil: null
+            };
+
+            tasks.push(task);
+            renderTasks();
+            updateStats();
+
+            // Clear inputs
+            document.getElementById('taskInput').value = "";
+            document.getElementById('taskDate').value = "";
+            document.getElementById('taskTime').value = "";
+            
+            // Show success feedback
+            showToast("Task added successfully!", "success");
+        }
+
+        function toggleTask(id) {
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                if (task.completed) {
+                    task.notified = true; // Don't notify for completed tasks
+                }
+                renderTasks();
+                updateStats();
+                
+                // Show feedback
+                const status = task.completed ? "completed" : "marked as pending";
+                showToast(`Task "${task.text.substring(0, 30)}..." ${status}`, "info");
+            }
+        }
+
+        function deleteTask(id) {
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                tasks = tasks.filter(t => t.id !== id);
+                renderTasks();
+                updateStats();
+                showToast(`Task "${task.text.substring(0, 30)}..." deleted`, "info");
+            }
+        }
+
+        function filterTasks(filter) {
+            currentFilter = filter;
+            
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            renderTasks();
+        }
+
+        function renderTasks() {
+            const list = document.getElementById('taskList');
+            
+            // Filter tasks based on current filter
+            let filteredTasks = tasks;
+            if (currentFilter === 'pending') {
+                filteredTasks = tasks.filter(t => !t.completed);
+            } else if (currentFilter === 'completed') {
+                filteredTasks = tasks.filter(t => t.completed);
+            } else if (currentFilter === 'dueToday') {
+                const today = new Date().toISOString().split('T')[0];
+                filteredTasks = tasks.filter(t => !t.completed && t.date === today);
+            }
+
+            if (filteredTasks.length === 0) {
+                let message = "";
+                if (currentFilter === 'all') {
+                    message = "No tasks yet. Add your first task above!";
+                } else if (currentFilter === 'pending') {
+                    message = "No pending tasks. Great job!";
+                } else if (currentFilter === 'dueToday') {
+                    message = "No tasks due today!";
+                } else {
+                    message = "No completed tasks yet.";
+                }
+                
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-clipboard-list"></i>
+                        <h3>${message}</h3>
+                        <p>${currentFilter === 'all' ? 'Click "Add Task" to get started' : 'Try changing the filter'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = filteredTasks.map(task => `
+                <li class="task-item ${task.completed ? "completed" : ""} ${isOverdue(task) ? 'overdue' : ''}" data-id="${task.id}">
+                    <div class="task-checkbox ${task.completed ? "checked" : ""}" onclick="toggleTask(${task.id})">
+                        ${task.completed ? '<i class="fas fa-check"></i>' : ''}
+                    </div>
+                    <div class="task-content">
+                        <div class="task-title">${task.text}</div>
+                        <div class="task-meta">
+                            <span><i class="far fa-calendar"></i> ${formatDate(task.date)}</span>
+                            <span><i class="far fa-clock"></i> ${task.time}</span>
+                            ${isOverdue(task) ? '<span style="color:#ef4444;"><i class="fas fa-exclamation-circle"></i> Overdue</span>' : ''}
+                            ${isDueSoon(task) && !task.completed ? '<span style="color:#f59e0b;"><i class="fas fa-clock"></i> Due soon</span>' : ''}
+                            ${task.snoozed ? '<span style="color:#8b5cf6;"><i class="fas fa-clock"></i> Snoozed</span>' : ''}
+                        </div>
+                    </div>
+                    <div class="task-actions">
+                        <button class="action-btn edit" title="Edit task" onclick="editTask(${task.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn delete" onclick="deleteTask(${task.id})" title="Delete task">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </li>
+            `).join('');
+            
+            // Add CSS for overdue tasks
+            if (!document.querySelector('#overdue-style')) {
+                const style = document.createElement('style');
+                style.id = 'overdue-style';
+                style.textContent = `
+                    .task-item.overdue {
+                        border-left: 4px solid #ef4444;
+                        background: #fef2f2;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric',
+                year: 'numeric'
+            });
+        }
+
+        function isOverdue(task) {
+            if (task.completed || task.snoozed) return false;
+            
+            const now = new Date();
+            const taskDateTime = new Date(task.date + "T" + task.time);
+            return now > taskDateTime;
+        }
+
+        function isDueSoon(task) {
+            if (task.completed || task.snoozed) return false;
+            
+            const now = new Date();
+            const taskDateTime = new Date(task.date + "T" + task.time);
+            const timeDiff = taskDateTime - now;
+            return timeDiff > 0 && timeDiff <= 30 * 60 * 1000; // Due within 30 minutes
+        }
+
+        function updateStats() {
+            document.getElementById('totalTasks').textContent = tasks.length;
+            document.getElementById('completedTasks').textContent = tasks.filter(t => t.completed).length;
+            document.getElementById('pendingTasks').textContent = tasks.filter(t => !t.completed).length;
+            
+            // Count tasks due soon (within 1 hour)
+            const dueSoonCount = tasks.filter(t => 
+                !t.completed && 
+                !t.snoozed && 
+                !isOverdue(t) && 
+                isDueSoon(t)
+            ).length;
+            document.getElementById('dueSoonTasks').textContent = dueSoonCount;
+        }
+
+        function showToast(message, type = "info") {
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                padding: 12px 24px;
+                border-radius: 8px;
+                color: white;
+                font-weight: 500;
+                z-index: 9999;
+                animation: slideInUp 0.3s ease;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                max-width: 300px;
+            `;
+            
+            // Set color based on type
+            if (type === "success") {
+                toast.style.background = "#10b981";
+            } else if (type === "error") {
+                toast.style.background = "#ef4444";
+            } else {
+                toast.style.background = "#3b82f6";
+            }
+            
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.style.animation = 'slideOutDown 0.3s ease';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
+
+        // Add CSS for toast animations
+        if (!document.querySelector('#toast-animations')) {
+            const style = document.createElement('style');
+            style.id = 'toast-animations';
+            style.textContent = `
+                @keyframes slideInUp {
+                    from { transform: translateY(100%); opacity: 0; }
+                    to { transform: translateY(0); opacity: 1; }
+                }
+                @keyframes slideOutDown {
+                    from { transform: translateY(0); opacity: 1; }
+                    to { transform: translateY(100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // ==================== ENHANCED NOTIFICATION SYSTEM ====================
+        
+        function showNotification(task) {
+            currentNotificationTask = task;
+            
+            // Update modal content
+            document.getElementById('notificationTaskTitle').textContent = task.text;
+            document.getElementById('notificationTaskTime').innerHTML = 
+                `<i class="far fa-calendar"></i> ${formatDate(task.date)} &nbsp; <i class="far fa-clock"></i> ${task.time}`;
+            
+            // Show modal
+            const modal = document.getElementById('notificationModal');
+            modal.style.display = 'block';
+            modal.style.animation = 'slideInRight 0.5s ease';
+            
+            // Play notification sound
+            if (notificationAudio) {
+                notificationAudio.play().catch(e => console.log("Audio play failed:", e));
+            }
+            
+            // Browser notification
+            if (Notification.permission === "granted") {
+                new Notification("TaskFlow: Task Due Now!", {
+                    body: `"${task.text}" is due now`,
+                    icon: "https://cdn-icons-png.flaticon.com/512/1827/1827314.png",
+                    tag: `task-${task.id}`
+                });
+            }
+            
+            // Mark as notified
+            task.notified = true;
+        }
+        
+        function closeNotification() {
+            const modal = document.getElementById('notificationModal');
+            modal.style.animation = 'slideOutRight 0.5s ease';
+            setTimeout(() => {
+                modal.style.display = 'none';
+                currentNotificationTask = null;
+            }, 500);
+        }
+        
+        function completeNotificationTask() {
+            if (currentNotificationTask) {
+                currentNotificationTask.completed = true;
+                renderTasks();
+                updateStats();
+                showToast("Task marked as complete!", "success");
+                closeNotification();
+            }
+        }
+        
+        function snoozeNotification() {
+            if (currentNotificationTask) {
+                // Snooze for 5 minutes
+                const snoozeTime = new Date(Date.now() + 5 * 60 * 1000);
+                currentNotificationTask.snoozed = true;
+                currentNotificationTask.snoozeUntil = snoozeTime;
+                
+                showToast("Task snoozed for 5 minutes", "info");
+                closeNotification();
+                renderTasks();
+                updateStats();
+            }
+        }
+        
+        function checkDueTasks() {
+            const now = new Date();
+            
+            tasks.forEach(task => {
+                // Skip if completed, already notified, or snoozed
+                if (task.completed || task.notified) return;
+                
+                if (task.snoozed && task.snoozeUntil) {
+                    // Check if snooze time has passed
+                    if (now >= task.snoozeUntil) {
+                        task.snoozed = false;
+                        task.snoozeUntil = null;
+                    } else {
+                        return; // Still snoozed
+                    }
+                }
+                
+                const taskDateTime = new Date(task.date + "T" + task.time);
+                
+                // Check if task is due now (within 1 second precision)
+                const timeDiff = Math.abs(now - taskDateTime);
+                
+                if (timeDiff <= 1000) { // Exact due time (1 second tolerance)
+                    showNotification(task);
+                }
+            });
+            
+            // Update stats to reflect due soon tasks
+            updateStats();
+        }
+        
+        // ==================== INITIALIZATION ====================
+        
+        window.onload = function() {
+            initializeNotifications();
+            updateDateTime();
+            
+            // Add sample tasks with near-future due times for testing
+            const now = new Date();
+            const futureTime = new Date(now.getTime() + 2 * 60 * 1000); // 2 minutes from now
+            const futureTimeStr = futureTime.toTimeString().slice(0, 5);
+            const today = now.toISOString().split('T')[0];
+            
+            const sampleTasks = [
+                {
+                    id: Date.now() - 1000,
+                    text: "Review quarterly project report",
+                    date: today,
+                    time: futureTimeStr,
+                    completed: false,
+                    notified: false,
+                    snoozed: false,
+                    snoozeUntil: null
+                },
+                {
+                    id: Date.now() - 2000,
+                    text: "Team meeting with development team",
+                    date: today,
+                    time: "23:59",
+                    completed: false,
+                    notified: false,
+                    snoozed: false,
+                    snoozeUntil: null
+                },
+                {
+                    id: Date.now() - 3000,
+                    text: "Prepare presentation slides",
+                    date: today,
+                    time: "18:30",
+                    completed: true,
+                    notified: true,
+                    snoozed: false,
+                    snoozeUntil: null
+                }
+            ];
+            
+            tasks.push(...sampleTasks);
+            renderTasks();
+            updateStats();
+            
+            // Start checking for due tasks every second
+            setInterval(checkDueTasks, 1000);
+            
+            // Notification settings button
+            document.getElementById('notificationBtn').addEventListener('click', function() {
+                if (Notification.permission === "granted") {
+                    showToast("Notifications are enabled", "success");
+                } else {
+                    Notification.requestPermission().then(permission => {
+                        if (permission === "granted") {
+                            showToast("Notifications enabled!", "success");
+                            updateNotificationStatus("Notifications enabled");
+                        } else {
+                            showToast("Notifications blocked", "error");
+                            updateNotificationStatus("Notifications blocked");
+                        }
+                    });
+                }
+            });
+        };
+    </script>
+</body>
+</html>
